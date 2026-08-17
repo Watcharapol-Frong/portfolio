@@ -1,10 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import FloatingNav from "@/components/FloatingNav";
 import ScrollRevealText from "@/components/ScrollRevealText";
-import { Mail, MapPin, Instagram, Linkedin, Dribbble } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, X, ChevronRight } from "lucide-react";
+
+const allCertifications = [
+  { name: "Effective Storytelling with AI", org: "Skooldio", year: "2026" },
+  { name: "Design Dashboard Principles", org: "Skooldio", year: "2026" },
+  { name: "Service Design Essentials", org: "", year: "2025" },
+  { name: "Design Thinking for Innovation", org: "", year: "2025" },
+  { name: "Data Analysis with Excel", org: "", year: "2025" },
+  { name: "Data Storytelling with Infographic", org: "", year: "2025" },
+  { name: "Investment Consultant License (P1)", org: "ATI", year: "2025" },
+  { name: "AI Development Scholarship", org: "42Bangkok & PMU-B", year: "2025" },
+  { name: "Excel Certification", org: "W3Schools", year: "2025" },
+  { name: "SQL Certification", org: "W3Schools", year: "2025" },
+  { name: "R Certification", org: "W3Schools", year: "2025" },
+  { name: "Statistics Certification", org: "W3Schools", year: "2025" },
+  { name: "Python Certification", org: "W3Schools", year: "2025" },
+  { name: "AWS Cloud Certification", org: "W3Schools", year: "2025" },
+  { name: "Git Certification", org: "W3Schools", year: "2025" },
+  { name: "Data Pipelines with Airflow", org: "", year: "2024" },
+  { name: "Effective Data Storytelling", org: "", year: "2024" },
+  { name: "Usability Design & Psychology for Digital Products", org: "", year: "2024" },
+  { name: "Enhancing UX Design Process with AI and ChatGPT", org: "", year: "2024" },
+  { name: "Intro to User Experience Design", org: "Skooldio", year: "2024" },
+  { name: "Fundamental Web Dev with HTML5 & CSS3", org: "", year: "2023" },
+  { name: "Essential SQL for Everyone", org: "", year: "2023" },
+  { name: "Notion Database for Everyone", org: "", year: "2023" },
+  { name: "Excel for Everyone", org: "", year: "2023" },
+  { name: "Data Science Bootcamp", org: "DataRockie", year: "2022" },
+];
+
+// Group by year descending
+const certsByYear = allCertifications.reduce<Record<string, typeof allCertifications>>(
+  (acc, cert) => {
+    if (!acc[cert.year]) acc[cert.year] = [];
+    acc[cert.year].push(cert);
+    return acc;
+  },
+  {}
+);
+const sortedYears = Object.keys(certsByYear).sort((a, b) => Number(b) - Number(a));
 
 const AboutIsland = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   useEffect(() => {
     if (window.location.hash === "#contact") {
       const element = document.getElementById("contact");
@@ -18,39 +59,47 @@ const AboutIsland = () => {
     }
   }, []);
 
-  const clients = [
-    "Vogue Brasil",
-    "D-Edge Club",
-    "Galeria Vermelho",
-    "ADG Brasil",
-    "Flow Magazine",
-    "Aurora AI",
-    "Nike",
-    "Spotify",
-    "Adobe",
+  // Lock body scroll when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [drawerOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDrawerOpen(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  const experience = [
+    { company: "CP Axtra — Makro Pro", period: "2025 – Present" },
+    { company: "Com7 Public Company Limited", period: "2023 – 2025" },
+    { company: "ACTIVE NATION CO., LTD", period: "2021 – 2023" },
+    { company: "INDEX LIVING MALL", period: "2019 – 2021" },
   ];
 
-  const services = [
-    "Brand Identity",
-    "Visual Systems",
-    "Art Direction",
-    "Typography",
-    "Digital Design",
-    "Motion Graphics",
-    "Print Design",
-    "Packaging",
+  const skills = [
+    "Excel",
+    "Python",
+    "R",
+    "SQL",
+    "Cloud",
+    "Statistics",
+    "Classical ML",
+    "AI",
+    "Data Storytelling",
+    "UX Design",
   ];
 
-  const recognition = [
-    { award: "ADG Brasil Award", year: "2024" },
-    { award: "Type Directors Club", year: "2023" },
-    { award: "Cannes Lions Bronze", year: "2022" },
-  ];
+  // Preview: show top 4 certs in the grid
+  const previewCerts = allCertifications.slice(0, 4);
 
   const socialLinks = [
-    { name: "Instagram", icon: Instagram, url: "https://instagram.com" },
-    { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com" },
-    { name: "Dribbble", icon: Dribbble, url: "https://dribbble.com" },
+    { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com/in/watcharapol" },
+    { name: "GitHub", icon: Github, url: "https://github.com/Watcharapol-Frong" },
   ];
 
   return (
@@ -62,7 +111,7 @@ const AboutIsland = () => {
         <section className="min-h-[60vh] max-h-[70vh] flex flex-col justify-center px-6 pt-24 pb-8">
           <div className="max-w-[95%]">
             <ScrollRevealText
-              text="Jordan Studio is an independent creative practice focused on graphic design, art direction, and visual identity systems that communicate with clarity and purpose."
+              text="Watcharapol Charoensuk (Frong) — Connecting Data to Business, and Strategy to Impact. Passionate about turning data into meaningful decisions through analytics, AI, and design thinking."
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-display"
             />
           </div>
@@ -71,46 +120,58 @@ const AboutIsland = () => {
         {/* Bottom Info Section - Horizontal Layout */}
         <section className="px-6 pb-32" id="contact">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 fade-in-up">
-            {/* Selected Clients */}
+            {/* Work Experience */}
             <div>
               <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
-                Selected Clients
+                Work Experience
               </h3>
               <ul className="space-y-1">
-                {clients.map((client) => (
-                  <li key={client} className="text-sm">
-                    {client}
+                {experience.map((item) => (
+                  <li key={item.company} className="text-sm">
+                    <span className="block">{item.company}</span>
+                    <span className="text-muted-foreground text-xs">{item.period}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Services */}
+            {/* Skills */}
             <div>
               <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
-                Services
+                Skills
               </h3>
-              <ul className="space-y-1">
-                {services.map((service) => (
-                  <li key={service} className="text-sm">
-                    {service}
-                  </li>
-                ))}
-              </ul>
+              <p className="text-sm text-foreground leading-relaxed">
+                {skills.join(" · ")}
+              </p>
             </div>
 
-            {/* Recognition */}
+            {/* Certifications — clickable header opens drawer */}
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
-                Recognition
-              </h3>
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="w-full text-left group"
+                aria-label="View all certifications"
+              >
+                <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2 flex items-center justify-between group-hover:text-foreground transition-colors duration-200">
+                  Certifications
+                  <ChevronRight size={12} className="opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" />
+                </h3>
+              </button>
               <ul className="space-y-1">
-                {recognition.map((item) => (
-                  <li key={item.award} className="text-sm flex justify-between gap-4">
-                    <span>{item.award}</span>
-                    <span className="text-muted-foreground">{item.year}</span>
+                {previewCerts.map((item) => (
+                  <li key={item.name} className="text-sm flex justify-between gap-4">
+                    <span className="truncate">{item.name}</span>
+                    <span className="text-muted-foreground flex-shrink-0">{item.year}</span>
                   </li>
                 ))}
+                <li>
+                  <button
+                    onClick={() => setDrawerOpen(true)}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors duration-200 mt-1"
+                  >
+                    +{allCertifications.length - previewCerts.length} more →
+                  </button>
+                </li>
               </ul>
             </div>
 
@@ -121,15 +182,15 @@ const AboutIsland = () => {
               </h3>
               <div className="space-y-2">
                 <a
-                  href="mailto:hello@jordanstudio.com"
+                  href="mailto:contact@frong.me"
                   className="text-sm hover:opacity-70 transition-opacity flex items-center gap-2"
                 >
                   <Mail size={14} />
-                  hello@jordanstudio.com
+                  contact@frong.me
                 </a>
                 <p className="text-sm flex items-center gap-2 text-muted-foreground">
                   <MapPin size={14} />
-                  São Paulo, Brazil
+                  Bangkok, Thailand
                 </p>
                 <div className="flex gap-2 pt-3">
                   {socialLinks.map((social) => (
@@ -150,6 +211,66 @@ const AboutIsland = () => {
           </div>
         </section>
       </main>
+
+      {/* Certifications Drawer */}
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
+          drawerOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Drawer Panel */}
+      <aside
+        className={`fixed top-0 right-0 z-50 h-full w-full max-w-sm bg-background border-l border-border shadow-2xl flex flex-col transition-transform duration-400 ease-in-out ${
+          drawerOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+        aria-label="Certifications drawer"
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border flex-shrink-0">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">All</p>
+            <h2 className="text-lg font-medium">Certifications</h2>
+          </div>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            className="p-2 rounded-full hover:bg-muted transition-colors duration-200"
+            aria-label="Close drawer"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Drawer Body — scrollable */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
+          {sortedYears.map((year) => (
+            <div key={year}>
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 font-medium">
+                {year}
+              </p>
+              <ul className="space-y-3">
+                {certsByYear[year].map((cert) => (
+                  <li key={cert.name} className="flex flex-col gap-0.5">
+                    <span className="text-sm">{cert.name}</span>
+                    {cert.org && (
+                      <span className="text-xs text-muted-foreground">{cert.org}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Drawer Footer */}
+        <div className="px-6 py-4 border-t border-border flex-shrink-0">
+          <p className="text-xs text-muted-foreground">{allCertifications.length} certifications total</p>
+        </div>
+      </aside>
+
       <FloatingNav />
     </>
   );

@@ -54,7 +54,7 @@ const Navbar = ({ selectedCategory, onCategoryChange }: NavbarProps) => {
               href="/"
               className="text-lg font-medium tracking-tight hover:opacity-70 transition-opacity duration-300"
             >
-              Jordan Studio
+              frong.me
             </a>
 
             {/* Center: Category Filters (Desktop only, only on Home page) */}

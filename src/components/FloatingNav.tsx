@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Mail, Instagram, Linkedin, Dribbble } from "lucide-react";
+import { Mail, Linkedin, Github } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -25,9 +25,8 @@ const FloatingNav = () => {
   };
 
   const socialLinks = [
-    { name: "Instagram", icon: Instagram, url: "https://instagram.com" },
-    { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com" },
-    { name: "Dribbble", icon: Dribbble, url: "https://dribbble.com" },
+    { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com/in/watcharapol" },
+    { name: "GitHub", icon: Github, url: "https://github.com/Watcharapol-Frong" },
   ];
 
   return (
@@ -72,11 +71,11 @@ const FloatingNav = () => {
                   Say Hi!
                 </p>
                 <a
-                  href="mailto:hello@jordanstudio.com"
+                  href="mailto:contact@frong.me"
                   className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
                 >
                   <Mail size={14} />
-                  hello@jordanstudio.com
+                  contact@frong.me
                 </a>
               </div>
 
