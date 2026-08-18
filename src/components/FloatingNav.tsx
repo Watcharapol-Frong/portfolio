@@ -16,6 +16,7 @@ const FloatingNav = () => {
 
   const navItems = [
     { name: "Work", path: "/" },
+    { name: "Articles", path: "/articles" },
     { name: "About", path: "/about" },
   ];
 

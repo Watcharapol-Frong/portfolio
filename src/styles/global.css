@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
 
 /* ---------------------------------------------------------------- */
 /* Design tokens ported 1:1 from the original tailwind.config.ts.   */

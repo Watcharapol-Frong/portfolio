@@ -1,0 +1,35 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+// Only show ## and ### (depth 2-3) - h1 is the article title itself
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{items.length > 0 && (
+  <nav class="border border-border rounded-2xl p-5 mb-8" aria-label="Table of contents">
+    <p class="text-xs uppercase tracking-widest text-muted-foreground mb-3">
+      Table of Contents
+    </p>
+    <ul class="space-y-1.5">
+      {items.map((h) => (
+        <li class={h.depth === 3 ? "pl-4" : ""}>
+          <a
+            href={`#${h.slug}`}
+            class="text-sm text-foreground/80 hover:text-foreground transition-colors"
+          >
+            {h.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
