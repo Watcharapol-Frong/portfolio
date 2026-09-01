@@ -1,23 +1,29 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import HomeIsland from "@/components/HomeIsland";
-import { getCollection, type CollectionEntry } from "astro:content";
-import { getImage } from "astro:assets";
+import { sanityClient } from "sanity:client";
+import { urlFor } from "@/lib/sanityImage";
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
-const sorted = allArticles.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+interface Article {
+  slug: string;
+  title: string;
+  tags: string[];
+  date: string;
+  cover: unknown;
+}
 
-const articles = await Promise.all(
-  sorted.map(async (article: CollectionEntry<"articles">) => {
-    const optimized = await getImage({ src: article.data.cover, width: 800 });
-    return {
-      slug: article.id,
-      title: article.data.title,
-      tags: article.data.tags,
-      cover: optimized.src,
-    };
-  })
+const sanityArticles: Article[] = await sanityClient.fetch(
+  `*[_type == "article" && !draft && defined(slug.current)] | order(date desc){
+    "slug": slug.current, title, tags, date, cover
+  }`
 );
+
+const articles = sanityArticles.map((article) => ({
+  slug: article.slug,
+  title: article.title,
+  tags: article.tags ?? [],
+  cover: urlFor(article.cover).width(800).auto("format").url(),
+}));
 
 const categories = [...new Set(articles.flatMap((article) => article.tags))];
 ---

@@ -4,43 +4,68 @@ import Navbar from "@/components/Navbar";
 import FloatingNav from "@/components/FloatingNav";
 import TableOfContents from "@/components/TableOfContents.astro";
 import ShareButton from "@/components/ShareButton";
-import { Image } from "astro:assets";
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import ArticleBody from "@/components/portabletext/ArticleBody.astro";
+import { sanityClient } from "sanity:client";
+import { urlFor } from "@/lib/sanityImage";
+import { extractHeadings } from "@/lib/slugify";
+
+interface Article {
+  _id: string;
+  title: string;
+  slug: string;
+  description: string;
+  cover: unknown;
+  tags: string[];
+  date: string;
+  sources: { label: string; url: string }[];
+  cta?: { label: string; url: string };
+  body: unknown[];
+}
 
 export async function getStaticPaths() {
-  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  const articles: Article[] = await sanityClient.fetch(
+    `*[_type == "article" && !draft && defined(slug.current)]{
+      _id, title, "slug": slug.current, description, cover, tags, date, sources, cta, body
+    }`
+  );
   return articles.map((article) => ({
-    params: { slug: article.id },
+    params: { slug: article.slug },
     props: { article },
   }));
 }
 
-const { article } = Astro.props;
-const { Content, headings } = await render(article);
-const { title, description, cover, tags, date, sources, cta } = article.data;
+const { article } = Astro.props as { article: Article };
+const { title, description, cover, tags, date, sources, cta, body } = article;
 
-const otherArticles = (await getCollection("articles", ({ data }) => !data.draft)).filter(
-  (a) => a.id !== article.id
+const headings = extractHeadings(body as never);
+
+const otherArticles: Article[] = await sanityClient.fetch(
+  `*[_type == "article" && !draft && defined(slug.current) && _id != $id]{
+    _id, title, "slug": slug.current, description, cover, tags, date, sources, cta, body
+  }`,
+  { id: article._id }
 );
 
 const scored = otherArticles
   .map((a) => ({
     article: a,
-    overlap: a.data.tags.filter((tag) => tags.includes(tag)).length,
+    overlap: a.tags.filter((tag) => tags.includes(tag)).length,
   }))
-  .sort((a, b) => b.overlap - a.overlap || b.article.data.date.valueOf() - a.article.data.date.valueOf());
+  .sort((a, b) => b.overlap - a.overlap || new Date(b.article.date).valueOf() - new Date(a.article.date).valueOf());
 
-const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s) => s.article);
+const relatedArticles = scored.slice(0, 3).map((s) => s.article);
+
+const coverUrl = urlFor(cover).width(1600).height(900).fit("crop").auto("format").url();
 ---
 
-<Layout title={`${title} - frong.me`} description={description} ogImage={cover}>
+<Layout title={`${title} - frong.me`} description={description} ogImage={coverUrl}>
   <main class="min-h-screen bg-background page-transition">
     <Navbar client:load />
 
     {/* Hero cover */}
     <section class="pt-20 px-4 md:px-6">
       <div class="w-full h-[40vh] md:h-[60vh] overflow-hidden rounded-2xl md:rounded-3xl fade-in-up">
-        <Image src={cover} alt={title} class="w-full h-full object-cover" />
+        <img src={coverUrl} alt={title} class="w-full h-full object-cover" />
       </div>
     </section>
 
@@ -51,7 +76,7 @@ const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s
           <h1 class="text-display mb-3">{title}</h1>
           <div class="flex flex-wrap items-center justify-between gap-4">
             <p class="text-sm text-muted-foreground">
-              {date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              {new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
               {" · "}
               {tags.map((tag, i) => (
                 <>
@@ -72,16 +97,11 @@ const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s
         {/* Table of contents */}
         <TableOfContents headings={headings} />
 
-        {/* Body content - mixed text + images from the .mdx file */}
-        <article class="prose prose-neutral max-w-none fade-in-up fade-in-up-delay-2
-          prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-foreground
-          prose-p:text-foreground/80 prose-strong:text-foreground prose-li:text-foreground/80
-          prose-blockquote:text-foreground prose-img:rounded-2xl prose-a:text-foreground">
-          <Content />
-        </article>
+        {/* Body content */}
+        <ArticleBody value={body} />
 
         {/* Sources */}
-        {sources.length > 0 && (
+        {sources && sources.length > 0 && (
           <section class="mt-12 pt-8 border-t border-border">
             <h2 class="text-xs uppercase tracking-widest text-muted-foreground mb-4">
               Sources
@@ -104,7 +124,7 @@ const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s
         )}
 
         {/* CTA */}
-        {cta && (
+        {cta?.label && (
           <section class="mt-8 p-6 rounded-2xl bg-muted text-center">
             <a
               href={cta.url}
@@ -125,10 +145,10 @@ const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s
               {relatedArticles.map((related) => (
                 <li>
                   <a
-                    href={`/articles/${related.id}`}
+                    href={`/articles/${related.slug}`}
                     class="text-sm underline hover:opacity-70 transition-opacity"
                   >
-                    {related.data.title}
+                    {related.title}
                   </a>
                 </li>
               ))}

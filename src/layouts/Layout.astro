@@ -6,7 +6,7 @@ import ogFallback from "../assets/og-fallback.svg";
 interface Props {
   title?: string;
   description?: string;
-  ogImage?: ImageMetadata;
+  ogImage?: ImageMetadata | string;
 }
 
 const {
@@ -17,15 +17,20 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const optimizedOgImage = await getImage({
-  src: ogImage ?? ogFallback,
-  width: 1200,
-  height: 630,
-  fit: "cover",
-  format: "jpeg",
-  quality: 80,
-});
-const ogImageURL = new URL(optimizedOgImage.src, Astro.site);
+let ogImageURL: URL;
+if (typeof ogImage === "string") {
+  ogImageURL = new URL(ogImage);
+} else {
+  const optimizedOgImage = await getImage({
+    src: ogImage ?? ogFallback,
+    width: 1200,
+    height: 630,
+    fit: "cover",
+    format: "jpeg",
+    quality: 80,
+  });
+  ogImageURL = new URL(optimizedOgImage.src, Astro.site);
+}
 ---
 
 <!DOCTYPE html>

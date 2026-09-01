@@ -1,0 +1,8 @@
+---
+import { urlFor } from "@/lib/sanityImage";
+
+const { node } = Astro.props as { node: { alt?: string; [key: string]: unknown } };
+const src = urlFor(node).width(1200).auto("format").url();
+---
+
+<img src={src} alt={node.alt || ""} loading="lazy" />
