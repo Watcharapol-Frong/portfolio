@@ -33,7 +33,7 @@ const scored = otherArticles
 const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s) => s.article);
 ---
 
-<Layout title={`${title} - frong.me`} description={description}>
+<Layout title={`${title} - frong.me`} description={description} ogImage={cover}>
   <main class="min-h-screen bg-background page-transition">
     <Navbar client:load />
 

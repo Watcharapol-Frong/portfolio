@@ -12,6 +12,10 @@ export default defineConfig({
   site: 'https://frong.me',
   integrations: [react(), mdx(), sitemap()],
 
+  image: {
+    dangerouslyProcessSVG: true,
+  },
+
   vite: {
     plugins: [tailwindcss()],
     resolve: {
