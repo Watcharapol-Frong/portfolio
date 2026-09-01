@@ -16,7 +16,6 @@ const FloatingNav = () => {
 
   const navItems = [
     { name: "Work", path: "/" },
-    { name: "Articles", path: "/articles" },
     { name: "About", path: "/about" },
   ];
 
@@ -26,7 +25,7 @@ const FloatingNav = () => {
   };
 
   const socialLinks = [
-    { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com/in/watcharapol" },
+    { name: "LinkedIn", icon: Linkedin, url: "https://www.linkedin.com/in/watcharapol-charoensuk-336b4a342" },
     { name: "GitHub", icon: Github, url: "https://github.com/Watcharapol-Frong" },
   ];
 
@@ -72,11 +71,11 @@ const FloatingNav = () => {
                   Say Hi!
                 </p>
                 <a
-                  href="mailto:contact@frong.me"
+                  href="mailto:frongbook@hotmail.com"
                   className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
                 >
                   <Mail size={14} />
-                  contact@frong.me
+                  frongbook@hotmail.com
                 </a>
               </div>
 

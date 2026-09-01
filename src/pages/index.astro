@@ -1,8 +1,27 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import HomeIsland from "@/components/HomeIsland";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { getImage } from "astro:assets";
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const sorted = allArticles.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const articles = await Promise.all(
+  sorted.map(async (article: CollectionEntry<"articles">) => {
+    const optimized = await getImage({ src: article.data.cover, width: 800 });
+    return {
+      slug: article.id,
+      title: article.data.title,
+      tags: article.data.tags,
+      cover: optimized.src,
+    };
+  })
+);
+
+const categories = [...new Set(articles.flatMap((article) => article.tags))];
 ---
 
 <Layout>
-  <HomeIsland client:load />
+  <HomeIsland client:load articles={articles} categories={categories} />
 </Layout>

@@ -3,8 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import Navbar from "@/components/Navbar";
 import FloatingNav from "@/components/FloatingNav";
 import TableOfContents from "@/components/TableOfContents.astro";
+import ShareButton from "@/components/ShareButton";
 import { Image } from "astro:assets";
-import { getCollection, render } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => !data.draft);
@@ -17,9 +18,22 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const { title, description, cover, tags, date, sources, cta } = article.data;
+
+const otherArticles = (await getCollection("articles", ({ data }) => !data.draft)).filter(
+  (a) => a.id !== article.id
+);
+
+const scored = otherArticles
+  .map((a) => ({
+    article: a,
+    overlap: a.data.tags.filter((tag) => tags.includes(tag)).length,
+  }))
+  .sort((a, b) => b.overlap - a.overlap || b.article.data.date.valueOf() - a.article.data.date.valueOf());
+
+const relatedArticles: CollectionEntry<"articles">[] = scored.slice(0, 3).map((s) => s.article);
 ---
 
-<Layout title={`${title} — frong.me`} description={description}>
+<Layout title={`${title} - frong.me`} description={description}>
   <main class="min-h-screen bg-background page-transition">
     <Navbar client:load />
 
@@ -35,11 +49,24 @@ const { title, description, cover, tags, date, sources, cta } = article.data;
       <div class="max-w-2xl mx-auto">
         <div class="mb-8 fade-in-up fade-in-up-delay-1">
           <h1 class="text-display mb-3">{title}</h1>
-          <p class="text-sm text-muted-foreground">
-            {date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-            {" · "}
-            {tags.map((tag) => `#${tag}`).join(" ")}
-          </p>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <p class="text-sm text-muted-foreground">
+              {date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              {" · "}
+              {tags.map((tag, i) => (
+                <>
+                  {i > 0 && " "}
+                  <a
+                    href={`/?tag=${encodeURIComponent(tag)}`}
+                    class="hover:text-foreground hover:underline transition-colors"
+                  >
+                    #{tag}
+                  </a>
+                </>
+              ))}
+            </p>
+            <ShareButton title={title} client:load />
+          </div>
         </div>
 
         {/* Table of contents */}
@@ -47,8 +74,9 @@ const { title, description, cover, tags, date, sources, cta } = article.data;
 
         {/* Body content - mixed text + images from the .mdx file */}
         <article class="prose prose-neutral max-w-none fade-in-up fade-in-up-delay-2
-          prose-headings:font-medium prose-headings:tracking-tight
-          prose-img:rounded-2xl prose-a:text-foreground">
+          prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-foreground
+          prose-p:text-foreground/80 prose-strong:text-foreground prose-li:text-foreground/80
+          prose-blockquote:text-foreground prose-img:rounded-2xl prose-a:text-foreground">
           <Content />
         </article>
 
@@ -87,11 +115,31 @@ const { title, description, cover, tags, date, sources, cta } = article.data;
           </section>
         )}
 
+        {/* Related articles */}
+        {relatedArticles.length > 0 && (
+          <section class="mt-12 pt-8 border-t border-border">
+            <h2 class="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+              Related articles
+            </h2>
+            <ul class="space-y-2">
+              {relatedArticles.map((related) => (
+                <li>
+                  <a
+                    href={`/articles/${related.id}`}
+                    class="text-sm underline hover:opacity-70 transition-opacity"
+                  >
+                    {related.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/*
-          Comments / "Other" sections (e.g. related articles, Giscus comments)
-          are intentionally left out here - they need a real backing service
-          (Giscus needs a public GitHub repo + Discussions enabled, for example).
-          This is the slot where that would go once you pick one.
+          Comments are intentionally left out here - they need a real backing
+          service (Giscus needs a public GitHub repo + Discussions enabled,
+          for example). This is the slot where that would go once you pick one.
         */}
       </div>
     </section>

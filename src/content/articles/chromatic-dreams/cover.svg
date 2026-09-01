@@ -6,5 +6,5 @@
     </linearGradient>
   </defs>
   <rect width="1200" height="800" fill="url(#bg)"/>
-  <text x="60" y="740" fill="#ffffff" opacity="0.25" font-family="sans-serif" font-size="20">placeholder cover — swap with a real image</text>
+  <text x="60" y="740" fill="#ffffff" opacity="0.25" font-family="sans-serif" font-size="20">placeholder cover - swap with a real image</text>
 </svg>
