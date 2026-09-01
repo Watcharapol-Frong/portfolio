@@ -1,15 +1,22 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Navbar from "@/components/Navbar";
+import FloatingNav from "@/components/FloatingNav";
 ---
 
 <Layout title="Page not found - frong.me">
-  <main class="min-h-screen bg-background flex items-center justify-center px-6">
-    <div class="text-center">
-      <h1 class="text-headline mb-4">404</h1>
-      <p class="text-muted-foreground mb-6">Oops! Page not found</p>
-      <a href="/" class="text-sm text-foreground underline hover:opacity-70 transition-opacity">
+  <main class="min-h-screen bg-background flex items-center justify-center px-6 page-transition">
+    <Navbar client:load />
+    <div class="text-center fade-in-up">
+      <p class="text-display mb-4">404</p>
+      <p class="text-muted-foreground mb-8">This page doesn't exist, or it moved somewhere else.</p>
+      <a
+        href="/"
+        class="inline-block px-6 py-2.5 rounded-full bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+      >
         Return to Home
       </a>
     </div>
   </main>
+  <FloatingNav client:load />
 </Layout>
