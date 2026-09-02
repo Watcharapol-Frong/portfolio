@@ -11,6 +11,7 @@
 @theme {
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-google-sans: "Google Sans", system-ui, sans-serif;
 
   --font-size-display: clamp(3rem, 8vw, 7rem);
   --font-size-headline: clamp(2rem, 5vw, 4rem);

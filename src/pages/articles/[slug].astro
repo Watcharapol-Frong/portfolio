@@ -17,7 +17,7 @@ interface Article {
   cover: unknown;
   tags: string[];
   date: string;
-  font?: "sans" | "serif";
+  font?: "sans" | "serif" | "google-sans";
   sources: { label: string; url: string }[];
   cta?: { label: string; url: string };
   body: unknown[];
@@ -37,7 +37,11 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props as { article: Article };
 const { title, description, cover, tags, date, font, sources, cta, body } = article;
-const fontClass = font === "serif" ? "font-serif" : "font-sans";
+const FONT_CLASSES: Record<string, string> = {
+  serif: "font-serif",
+  "google-sans": "font-google-sans",
+};
+const fontClass = FONT_CLASSES[font ?? "sans"] ?? "font-sans";
 
 const headings = extractHeadings(body as never);
 

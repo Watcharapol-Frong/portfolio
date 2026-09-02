@@ -56,6 +56,7 @@ export default defineType({
         list: [
           { title: "Sans (Inter)", value: "sans" },
           { title: "Serif (Cormorant Garamond)", value: "serif" },
+          { title: "Google Sans", value: "google-sans" },
         ],
         layout: "radio",
       },
