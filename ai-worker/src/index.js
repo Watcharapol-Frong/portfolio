@@ -6,7 +6,7 @@ const CORS_HEADERS = {
 
 const DEFAULT_MODELS = {
   cloudflare: "@cf/meta/llama-3.1-8b-instruct-fp8",
-  gemini: "gemini-2.0-flash",
+  gemini: "gemini-3.5-flash-lite",
   openrouter: "openai/gpt-4o-mini",
 };
 
